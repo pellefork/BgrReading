@@ -34,13 +34,21 @@ class MainActivity : AppCompatActivity() {
         clear_button.onClickWithDebounce {
 
         }
-        start_button.onClickWithDebounce {
+        start_location_button.onClickWithDebounce {
             Timber.d("startLocationUpdates")
             repo.startLocationUpdates()
         }
-        stop_button.onClickWithDebounce {
+        stop_location_button.onClickWithDebounce {
             Timber.d("stopLocationUpdates")
             repo.stopLocationUpdates()
+        }
+        start_motion_button.onClickWithDebounce {
+            Timber.d("startLocationUpdates")
+            repo.startMotionSensorUpdates()
+        }
+        stop_motion_button.onClickWithDebounce {
+            Timber.d("stopLocationUpdates")
+            repo.stopMotionSensorUpdates()
         }
     }
 

@@ -23,7 +23,7 @@
             android:text="Clear database"/>
 
         <Button
-            android:id="@+id/start_button"
+            android:id="@+id/start_location_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/button_margin"
@@ -31,35 +31,71 @@
             android:text="Start location reading"/>
 
         <Button
-            android:id="@+id/stop_button"
+            android:id="@+id/stop_location_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/button_margin"
             android:layout_marginEnd="@dimen/button_margin"
             android:text="Stop location reading"/>
 
+        <Button
+            android:id="@+id/start_motion_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/button_margin"
+            android:layout_marginEnd="@dimen/button_margin"
+            android:text="Start motion sensors"/>
+
+        <Button
+            android:id="@+id/stop_motion_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/button_margin"
+            android:layout_marginEnd="@dimen/button_margin"
+            android:text="Stop motion sensors"/>
+
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/label_readings_location"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/output_pane"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@+id/buttons"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="@dimen/button_margin"
-        android:text="Number of location readings"/>
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/text_readings_location"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/label_readings_location"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:textSize="48sp"
-        android:layout_marginTop="@dimen/button_margin"
-        tools:text="000"/>
+        <TextView
+            android:id="@+id/label_readings_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/button_margin"
+            android:text="Number of location readings"/>
+
+        <TextView
+            android:id="@+id/text_readings_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="48sp"
+            android:layout_marginTop="@dimen/normal_margin"
+            tools:text="000"/>
+
+        <TextView
+            android:id="@+id/label_readings_motion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/button_margin"
+            android:text="Number of motion sensor readings"/>
+
+        <TextView
+            android:id="@+id/text_readings_motion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="48sp"
+            android:layout_marginTop="@dimen/normal_margin"
+            tools:text="000"/>
+
+    </LinearLayout>
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
