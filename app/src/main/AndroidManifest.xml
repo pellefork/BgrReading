@@ -24,6 +24,10 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".ColocationActivity"
+            android:label="CoLocation Test"
+            android:theme="@style/AppTheme.NoActionBar"/>
+
         <receiver
             android:name=".receivers.LocationUpdatesBroadcastReceiver"
             android:exported="true">

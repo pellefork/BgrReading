@@ -10,6 +10,7 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.core.app.ActivityCompat
 import kotlinx.android.synthetic.main.content_main.*
+import se.fork.bgrreading.extensions.launchActivity
 import se.fork.bgrreading.extensions.onClickWithDebounce
 import timber.log.Timber
 
@@ -64,6 +65,10 @@ class MainActivity : AppCompatActivity() {
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
             R.id.action_settings -> true
+            R.id.action_colocation -> {
+                launchActivity<ColocationActivity> {  }
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
