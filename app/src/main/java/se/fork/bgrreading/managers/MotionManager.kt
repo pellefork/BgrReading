@@ -15,8 +15,10 @@ class MotionManager private constructor(private val context: Context)  : SensorE
                                     Sensor.TYPE_GYROSCOPE,
                                     Sensor.TYPE_GYROSCOPE_UNCALIBRATED,
                                     Sensor.TYPE_MOTION_DETECT,
+                                    Sensor.TYPE_SIGNIFICANT_MOTION,
                                     Sensor.TYPE_LINEAR_ACCELERATION,
-                                    Sensor.TYPE_POSE_6DOF)
+                                    Sensor.TYPE_POSE_6DOF,
+                                    Sensor.TYPE_ROTATION_VECTOR)
 
     fun listSensors() : List<Sensor> {
         val deviceSensors: List<Sensor> = sensorManager.getSensorList(Sensor.TYPE_ALL)
@@ -60,6 +62,10 @@ class MotionManager private constructor(private val context: Context)  : SensorE
     }
 
     override fun onSensorChanged(event: SensorEvent?) {
-        Timber.d("onSensorChanged $event")
+        val sensorName = event?.sensor?.name
+        val accuracy = event?.accuracy
+        val timestamp = event?.timestamp
+        val values = event?.values?.toList()
+        Timber.d("onSensorChanged $timestamp, $sensorName, $accuracy, $values")
     }
 }

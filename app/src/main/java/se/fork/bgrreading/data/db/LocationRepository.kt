@@ -30,6 +30,11 @@ class LocationRepository private constructor(
     @MainThread
     fun startMotionSensorUpdates() = motionManager.startMotionSensorUpdates()
 
+/*
+    @MainThread
+    fun clearDatabase() = motionManager.startMotionSensorUpdates()
+*/
+
     /**
      * Un-subscribes from location updates.
      */
