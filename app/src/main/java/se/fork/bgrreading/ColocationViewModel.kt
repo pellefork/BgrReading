@@ -21,8 +21,8 @@ class ColocationViewModel (
         .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
         //.setSmallestDisplacement(1f)
         //.setNumUpdates(3)
-        .setInterval(5000)
-        .setFastestInterval(2500)
+        .setInterval(0)
+        .setFastestInterval(41)
 
 
     private val mutableLocationUpdates: MutableLiveData<Location> = MutableLiveData()
