@@ -18,7 +18,7 @@ class MotionManager private constructor(private val context: Context)  : SensorE
     val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
     val motionSensorTypes = listOf(
                                     // Sensor.TYPE_ACCELEROMETER,
-                                    Sensor.TYPE_GYROSCOPE,
+                                    // Sensor.TYPE_GYROSCOPE,
                                     // Sensor.TYPE_GYROSCOPE_UNCALIBRATED,
                                     // Sensor.TYPE_MOTION_DETECT,
                                     // Sensor.TYPE_SIGNIFICANT_MOTION,

@@ -13,4 +13,10 @@
         android:orderInCategory="100"
         android:title="Colocation test"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_test_firebase"
+        android:orderInCategory="100"
+        android:title="Testa Firebase"
+        app:showAsAction="never" />
 </menu>

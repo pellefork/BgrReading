@@ -2,10 +2,12 @@ package se.fork.bgrreading.data.db
 
 import android.content.Context
 import androidx.annotation.MainThread
+import com.google.firebase.database.FirebaseDatabase
 import io.reactivex.Completable
 import se.fork.bgrreading.managers.LocationManager
 import se.fork.bgrreading.managers.MotionManager
 import timber.log.Timber
+import java.util.*
 import java.util.concurrent.ExecutorService
 
 class BgrReadingRepository private constructor(
@@ -14,6 +16,13 @@ class BgrReadingRepository private constructor(
     private val motionManager: MotionManager,
     private val executor: ExecutorService
 ) {
+    private val firebaseDb = FirebaseDatabase.getInstance()
+
+    fun testFirebase() {
+        val dbRef = firebaseDb.reference
+        dbRef.setValue("Test successful at ${Date().toString()}")
+    }
+
     /**
      * Subscribes to location updates.
      */
@@ -30,11 +39,6 @@ class BgrReadingRepository private constructor(
      */
     @MainThread
     fun startMotionSensorUpdates() = motionManager.startMotionSensorUpdates()
-
-/*
-    @MainThread
-    fun clearDatabase() = motionManager.startMotionSensorUpdates()
-*/
 
     fun clearDatabase() {
         executor.execute{
@@ -87,6 +91,9 @@ class BgrReadingRepository private constructor(
                     MotionManager.getInstance(context),
                     executor)
                     .also { INSTANCE = it }
+                    .also {
+
+                    }
             }
         }
     }

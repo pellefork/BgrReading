@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "824326731541",
+    "firebase_url": "https://bgrreading.firebaseio.com",
+    "project_id": "bgrreading",
+    "storage_bucket": "bgrreading.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:824326731541:android:0702c1927b8256bd125b1c",
+        "android_client_info": {
+          "package_name": "se.fork.bgrreading"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "824326731541-hk7vsoctdem7mr1t1ilk7soddq18se1b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "se.fork.bgrreading",
+            "certificate_hash": "59223957fa3d33e8e54042e660e0edcfdac42d0a"
+          }
+        },
+        {
+          "client_id": "824326731541-ba7hfjuqksfmags1mr03gh4tfcstq17k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAzOio6LN3YO2c3d6deN7Ice0oViMH7lVs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "824326731541-ba7hfjuqksfmags1mr03gh4tfcstq17k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
