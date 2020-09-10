@@ -31,7 +31,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupClickListeners() {
         clear_button.onClickWithDebounce {
-
+            Timber.d("clearDatabase")
+            repo.clearDatabase()
         }
         start_location_button.onClickWithDebounce {
             Timber.d("startLocationUpdates")

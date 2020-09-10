@@ -35,6 +35,14 @@ class BgrReadingRepository private constructor(
     fun clearDatabase() = motionManager.startMotionSensorUpdates()
 */
 
+    fun clearDatabase() {
+        executor.execute{
+            bgrReadingDatabase.linearAcceleretionDao().clearTable()
+            bgrReadingDatabase.locationDao().clearTable()
+            bgrReadingDatabase.rotationVectorDao().clearTable()
+        }
+    }
+
     fun addAcceleration(acc : LinearAcceleration) {
         executor.execute{
             bgrReadingDatabase.linearAcceleretionDao().addAcceleration(acc)
