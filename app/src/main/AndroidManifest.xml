@@ -36,6 +36,14 @@
             </intent-filter>
         </receiver>
 
+        <receiver
+            android:name=".receivers.MotionBroadcastReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="se.fork.bgrreading.receivers.MotionBroadcastReceiver.ACTION_PROCESS_UPDATES" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

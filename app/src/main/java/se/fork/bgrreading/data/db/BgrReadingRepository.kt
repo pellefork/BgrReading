@@ -2,13 +2,13 @@ package se.fork.bgrreading.data.db
 
 import android.content.Context
 import androidx.annotation.MainThread
-import com.google.android.gms.location.sample.locationupdatesbackgroundkotlin.data.db.MyLocationDatabase
+import io.reactivex.Completable
 import se.fork.bgrreading.managers.LocationManager
 import se.fork.bgrreading.managers.MotionManager
 import java.util.concurrent.ExecutorService
 
-class LocationRepository private constructor(
-    private val myLocationDatabase: MyLocationDatabase,
+class BgrReadingRepository private constructor(
+    private val bgrReadingDatabase: BgrReadingDatabase,
     private val locationManager: LocationManager,
     private val motionManager: MotionManager,
     private val executor: ExecutorService
@@ -35,6 +35,30 @@ class LocationRepository private constructor(
     fun clearDatabase() = motionManager.startMotionSensorUpdates()
 */
 
+    fun addAcceleration(acc : LinearAcceleration) {
+        executor.execute{
+            bgrReadingDatabase.linearAcceleretionDao().addAcceleration(acc)
+        }
+    }
+
+    fun addRotationVector(vector: RotationVector) {
+        executor.execute{
+            bgrReadingDatabase.rotationVectorDao().addRotationVector(vector)
+        }
+    }
+
+    fun addLocation(location: MyLocationEntity)  {
+        executor.execute{
+            bgrReadingDatabase.locationDao().addLocation(location)
+        }
+    }
+
+    fun addLocations(locations: List<MyLocationEntity>) {
+        executor.execute{
+            bgrReadingDatabase.locationDao().addLocations(locations)
+        }
+    }
+
     /**
      * Un-subscribes from location updates.
      */
@@ -42,12 +66,12 @@ class LocationRepository private constructor(
     fun stopMotionSensorUpdates() = motionManager.stopMotionSensorUpdates()
 
     companion object {
-        @Volatile private var INSTANCE: LocationRepository? = null
+        @Volatile private var INSTANCE: BgrReadingRepository? = null
 
-        fun getInstance(context: Context, executor: ExecutorService): LocationRepository {
+        fun getInstance(context: Context, executor: ExecutorService): BgrReadingRepository {
             return INSTANCE ?: synchronized(this) {
-                INSTANCE ?: LocationRepository(
-                    MyLocationDatabase.getInstance(context),
+                INSTANCE ?: BgrReadingRepository(
+                    BgrReadingDatabase.getInstance(context),
                     LocationManager.getInstance(context),
                     MotionManager.getInstance(context),
                     executor)

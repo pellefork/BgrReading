@@ -5,21 +5,23 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import android.hardware.SensorManager.SENSOR_DELAY_FASTEST
+import android.hardware.SensorManager.*
 import androidx.annotation.MainThread
 import timber.log.Timber
 
 class MotionManager private constructor(private val context: Context)  : SensorEventListener {
-    val  sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-    val motionSensorTypes = listOf(Sensor.TYPE_ACCELEROMETER,
+    val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+    val motionSensorTypes = listOf(
+                                    // Sensor.TYPE_ACCELEROMETER,
                                     Sensor.TYPE_GYROSCOPE,
-                                    Sensor.TYPE_GYROSCOPE_UNCALIBRATED,
-                                    Sensor.TYPE_MOTION_DETECT,
-                                    Sensor.TYPE_SIGNIFICANT_MOTION,
+                                    // Sensor.TYPE_GYROSCOPE_UNCALIBRATED,
+                                    // Sensor.TYPE_MOTION_DETECT,
+                                    // Sensor.TYPE_SIGNIFICANT_MOTION,
                                     Sensor.TYPE_LINEAR_ACCELERATION,
-                                    Sensor.TYPE_POSE_6DOF,
+                                    // Sensor.TYPE_POSE_6DOF,
                                     Sensor.TYPE_ROTATION_VECTOR)
 
+    @MainThread
     fun listSensors() : List<Sensor> {
         val deviceSensors: List<Sensor> = sensorManager.getSensorList(Sensor.TYPE_ALL)
         Timber.d("Total sensors: ${deviceSensors.size}")
@@ -35,7 +37,7 @@ class MotionManager private constructor(private val context: Context)  : SensorE
         for (sensorType in motionSensorTypes) {
             val sensor = sensorManager.getDefaultSensor(sensorType)
             Timber.d("startMotionSensorUpdates: Registering listener for $sensor")
-            val result = sensorManager.registerListener(this, sensor, SENSOR_DELAY_FASTEST)
+            val result = sensorManager.registerListener(this, sensor, SENSOR_DELAY_UI)
             Timber.d("startMotionSensorUpdates: Registering successful? $result")
         }
     }

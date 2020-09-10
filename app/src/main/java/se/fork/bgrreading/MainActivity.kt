@@ -3,8 +3,6 @@ package se.fork.bgrreading
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
@@ -19,7 +17,7 @@ class MainActivity : AppCompatActivity() {
     companion object {
         const val REQUEST_CODE_FOREGROUND = 1544
         const val REQUEST_CODE_BACKGROUND = 1545
-        val repo = BgrReadingApplication.locationRepository
+        val repo = BgrReadingApplication.bgrReadingRepository
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

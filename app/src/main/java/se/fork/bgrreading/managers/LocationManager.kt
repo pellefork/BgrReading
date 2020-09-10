@@ -49,7 +49,7 @@ class LocationManager private constructor(private val context: Context) {
         LocationServices.getFusedLocationProviderClient(context)
 
     // Stores parameters for requests to the FusedLocationProviderApi.
-    private val locationRequest: LocationRequest = LocationRequest().apply {
+    private val locationRequestX: LocationRequest = LocationRequest().apply {
         // Sets the desired interval for active location updates. This interval is inexact. You
         // may not receive updates at all if no location sources are available, or you may
         // receive them slower than requested. You may also receive updates faster than
@@ -71,6 +71,14 @@ class LocationManager private constructor(private val context: Context) {
         priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         Timber.d("Created LocationRequest")
     }
+
+    private val locationRequest: LocationRequest = LocationRequest.create()
+        .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+        //.setSmallestDisplacement(1f)
+        //.setNumUpdates(3)
+        .setInterval(0)
+        .setFastestInterval(41)
+
 
     /**
      * Creates default PendingIntent for location changes.

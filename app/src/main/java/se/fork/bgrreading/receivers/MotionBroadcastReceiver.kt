@@ -13,8 +13,6 @@ import timber.log.Timber
 import java.util.Date
 import java.util.concurrent.Executors
 
-private const val TAG = "LUBroadcastReceiver"
-
 /**
  * Receiver for handling location updates.
  *
@@ -28,10 +26,10 @@ private const val TAG = "LUBroadcastReceiver"
  *  {@link com.google.android.gms.location.LocationRequest} when the app is no longer in the
  *  foreground.
  */
-class LocationUpdatesBroadcastReceiver : BroadcastReceiver() {
+class MotionBroadcastReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
-        Log.d(TAG, "onReceive() context:$context, intent:$intent")
+        Timber.d("onReceive() context:$context, intent:$intent")
 
         if (intent.action == ACTION_PROCESS_UPDATES) {
             LocationResult.extractResult(intent)?.let { locationResult ->
@@ -78,6 +76,6 @@ class LocationUpdatesBroadcastReceiver : BroadcastReceiver() {
     }
 
     companion object {
-        const val ACTION_PROCESS_UPDATES = "se.fork.bgrreading.receivers.LocationUpdatesBroadcastReceiver.ACTION_PROCESS_UPDATES"
+        const val ACTION_PROCESS_UPDATES = "se.fork.bgrreading.receivers.MotionBroadcastReceiver.ACTION_PROCESS_UPDATES"
     }
 }

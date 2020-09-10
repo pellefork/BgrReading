@@ -2,7 +2,7 @@ package se.fork.bgrreading
 
 import android.app.Application
 import com.facebook.stetho.Stetho
-import se.fork.bgrreading.data.db.LocationRepository
+import se.fork.bgrreading.data.db.BgrReadingRepository
 import timber.log.Timber
 import java.util.concurrent.Executors
 
@@ -14,7 +14,7 @@ class BgrReadingApplication : Application() {
         Stetho.initializeWithDefaults(this)
         Timber.d("onCreate: Stetho initialized")
 
-        locationRepository = LocationRepository.getInstance(this, Executors.newSingleThreadExecutor())
+        bgrReadingRepository = BgrReadingRepository.getInstance(this, Executors.newSingleThreadExecutor())
     }
 
     private class ReleaseTree : Timber.Tree() {
@@ -24,7 +24,7 @@ class BgrReadingApplication : Application() {
     }
 
     companion object{
-        lateinit var locationRepository : LocationRepository
+        lateinit var bgrReadingRepository : BgrReadingRepository
     }
 }
 
