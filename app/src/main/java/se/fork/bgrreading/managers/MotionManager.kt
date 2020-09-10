@@ -2,12 +2,17 @@ package se.fork.bgrreading.managers
 
 import android.content.Context
 import android.hardware.Sensor
+import android.hardware.Sensor.*
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.hardware.SensorManager.*
 import androidx.annotation.MainThread
+import se.fork.bgrreading.data.db.BgrReadingRepository
+import se.fork.bgrreading.data.db.LinearAcceleration
+import se.fork.bgrreading.data.db.RotationVector
 import timber.log.Timber
+import java.util.concurrent.Executors
 
 class MotionManager private constructor(private val context: Context)  : SensorEventListener {
     val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
@@ -69,5 +74,26 @@ class MotionManager private constructor(private val context: Context)  : SensorE
         val timestamp = event?.timestamp
         val values = event?.values?.toList()
         Timber.d("onSensorChanged $timestamp, $sensorName, $accuracy, $values")
+        saveSensorEvent(event)
+    }
+
+    private fun saveSensorEvent(event: SensorEvent?) {
+        event?.let {
+            when (it.sensor.type) {
+                TYPE_GYROSCOPE -> {
+                    Timber.d("saveSensorEvent: TYPE_GYROSCOPE not implemented, we try to do with TYPE_ROTATION_VECTOR")
+                }
+                TYPE_LINEAR_ACCELERATION -> {
+                    val acc = LinearAcceleration.from(it)
+                    Timber.d("saveSensorEvent: TYPE_LINEAR_ACCELERATION, created $acc")
+                    BgrReadingRepository.getInstance(context, Executors.newSingleThreadExecutor()).addAcceleration(acc)
+                }
+                TYPE_ROTATION_VECTOR -> {
+                    val rot = RotationVector.from((it))
+                    Timber.d("saveSensorEvent: TYPE_ROTATION_VECTOR, created $rot")
+                    BgrReadingRepository.getInstance(context, Executors.newSingleThreadExecutor()).addRotationVector(rot)
+                }
+            }
+        }
     }
 }

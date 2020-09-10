@@ -5,6 +5,7 @@ import androidx.annotation.MainThread
 import io.reactivex.Completable
 import se.fork.bgrreading.managers.LocationManager
 import se.fork.bgrreading.managers.MotionManager
+import timber.log.Timber
 import java.util.concurrent.ExecutorService
 
 class BgrReadingRepository private constructor(
@@ -44,12 +45,14 @@ class BgrReadingRepository private constructor(
     }
 
     fun addAcceleration(acc : LinearAcceleration) {
+        Timber.d("addAcceleration: $acc")
         executor.execute{
             bgrReadingDatabase.linearAcceleretionDao().addAcceleration(acc)
         }
     }
 
     fun addRotationVector(vector: RotationVector) {
+        Timber.d("addRotationVector: $vector")
         executor.execute{
             bgrReadingDatabase.rotationVectorDao().addRotationVector(vector)
         }
