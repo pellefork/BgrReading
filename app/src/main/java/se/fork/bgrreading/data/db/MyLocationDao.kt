@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
+import io.reactivex.Single
 import java.util.UUID
 
 /**
@@ -14,10 +15,10 @@ import java.util.UUID
 interface MyLocationDao {
 
     @Query("SELECT * FROM my_location_table ORDER BY date DESC")
-    fun getLocations(): LiveData<List<MyLocationEntity>>
+    fun getLocations(): Single<List<MyLocationEntity>>
 
     @Query("SELECT * FROM my_location_table WHERE id=(:id)")
-    fun getLocation(id: UUID): LiveData<MyLocationEntity>
+    fun getLocation(id: UUID): Single<MyLocationEntity>
 
     @Query("delete from my_location_table")
     fun clearTable()

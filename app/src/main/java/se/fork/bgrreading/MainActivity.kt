@@ -108,6 +108,10 @@ class MainActivity : AppCompatActivity() {
                 BgrReadingRepository.getInstance(this,  Executors.newSingleThreadExecutor()).testFirebase()
                 true
             }
+            R.id.action_upload_session -> {
+                BgrReadingRepository.getInstance(this,  Executors.newSingleThreadExecutor()).buildAndUploadSession(this)
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }

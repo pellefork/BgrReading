@@ -1,11 +1,13 @@
 package se.fork.bgrreading.data.db
 
 import android.content.Context
+import android.widget.Toast
 import androidx.annotation.MainThread
 import com.google.firebase.database.FirebaseDatabase
-import io.reactivex.Completable
+import se.fork.bgrreading.data.remote.Session
 import se.fork.bgrreading.managers.LocationManager
 import se.fork.bgrreading.managers.MotionManager
+import se.fork.bgrreading.managers.SessionBuilder
 import timber.log.Timber
 import java.util.*
 import java.util.concurrent.ExecutorService
@@ -23,20 +25,12 @@ class BgrReadingRepository private constructor(
         dbRef.setValue("Test successful at ${Date().toString()}")
     }
 
-    /**
-     * Subscribes to location updates.
-     */
     @MainThread
     fun startLocationUpdates() = locationManager.startLocationUpdates()
 
-    /**
-     * Un-subscribes from location updates.
-     */
     @MainThread
     fun stopLocationUpdates() = locationManager.stopLocationUpdates()
-    /**
-     * Subscribes to location updates.
-     */
+
     @MainThread
     fun startMotionSensorUpdates() = motionManager.startMotionSensorUpdates()
 
@@ -74,11 +68,33 @@ class BgrReadingRepository private constructor(
         }
     }
 
-    /**
-     * Un-subscribes from location updates.
-     */
     @MainThread
     fun stopMotionSensorUpdates() = motionManager.stopMotionSensorUpdates()
+
+    fun buildAndUploadSession(context: Context) {
+        SessionBuilder.build(context, {
+            onSessionAggregated(it)
+        }, {
+            onSessionAggregationError(it, context)
+        })
+    }
+
+    fun onSessionAggregated(session: Session) {
+        uploadSession(session)
+    }
+
+    fun onSessionAggregationError(e:Throwable, context: Context) {
+        Toast.makeText(context, "Could not aggregate session: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun uploadSession(session: Session) {
+        Timber.d("uploadSession: $session")
+        val dbRef = firebaseDb.reference
+        val key = dbRef.child("sessions").push().key
+        if (key != null) {
+            dbRef.child("sessions").child(key).setValue(session)
+        }
+    }
 
     companion object {
         @Volatile private var INSTANCE: BgrReadingRepository? = null
@@ -91,9 +107,6 @@ class BgrReadingRepository private constructor(
                     MotionManager.getInstance(context),
                     executor)
                     .also { INSTANCE = it }
-                    .also {
-
-                    }
             }
         }
     }

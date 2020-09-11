@@ -17,6 +17,12 @@
     <item
         android:id="@+id/action_test_firebase"
         android:orderInCategory="100"
-        android:title="Testa Firebase"
+        android:title="Test Firebase"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_upload_session"
+        android:orderInCategory="100"
+        android:title="Upload session"
         app:showAsAction="never" />
 </menu>
