@@ -12,6 +12,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="@dimen/normal_margin"
+        android:visibility="gone"
         android:orientation="vertical">
 
         <Button
@@ -54,6 +55,14 @@
             android:layout_marginEnd="@dimen/button_margin"
             android:text="Stop motion sensors"/>
 
+        <Button
+            android:id="@+id/upload_session_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/button_margin"
+            android:layout_marginEnd="@dimen/button_margin"
+            android:text="Upload session"/>
+
     </LinearLayout>
 
     <LinearLayout
@@ -75,7 +84,7 @@
             android:id="@+id/text_readings_location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="48sp"
+            android:textSize="24sp"
             android:layout_marginTop="@dimen/normal_margin"
             tools:text="000"/>
 
@@ -90,9 +99,19 @@
             android:id="@+id/text_readings_motion"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="48sp"
+            android:textSize="24sp"
             android:layout_marginTop="@dimen/normal_margin"
             tools:text="000"/>
+
+
+        <ImageButton
+            android:id="@+id/start_stop_button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="@dimen/normal_margin"
+            android:src="@android:drawable/ic_media_play"
+            android:tint="@color/colorPrimaryDark"
+            android:background="@color/colorAccent"/>
 
     </LinearLayout>
 

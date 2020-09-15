@@ -8,11 +8,14 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.LiveData
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseError
 import kotlinx.android.synthetic.main.content_main.*
 import se.fork.bgrreading.data.db.BgrReadingRepository
 import se.fork.bgrreading.extensions.launchActivity
@@ -58,7 +61,8 @@ class MainActivity : AppCompatActivity() {
             if (resultCode == Activity.RESULT_OK) {
                 // Successfully signed in
                 val user = FirebaseAuth.getInstance().currentUser
-                Toast.makeText(this, "Inloggad som $user", Toast.LENGTH_SHORT).show()
+                val name  = user?.displayName
+                Toast.makeText(this, "Logged in as $name.", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(this, "Inloggningen sket sig", Toast.LENGTH_SHORT).show()
             }
@@ -86,6 +90,27 @@ class MainActivity : AppCompatActivity() {
             Timber.d("stopLocationUpdates")
             repo.stopMotionSensorUpdates()
         }
+        upload_session_button.onClickWithDebounce {
+            Timber.d("stopLocationUpdates")
+            repo.buildAndUploadSession(this, {
+               onUploadSuccess()
+            }, {
+                onUploadError(it)
+            })
+        }
+
+        start_stop_button.onClickWithDebounce {
+            Timber.d("stopLocationUpdates")
+            startStop()
+        }
+    }
+
+    private fun onUploadSuccess() {
+        Toast.makeText(this, "Session uploaded", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun onUploadError(error: DatabaseError) {
+        Toast.makeText(this, "Session upload error: ${error.message}", Toast.LENGTH_SHORT).show()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -100,20 +125,59 @@ class MainActivity : AppCompatActivity() {
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
             R.id.action_settings -> true
-            R.id.action_colocation -> {
-                launchActivity<ColocationActivity> {  }
+            R.id.action_toggle_buttons -> {
+                toggleButtons()
                 true
             }
             R.id.action_test_firebase -> {
                 BgrReadingRepository.getInstance(this,  Executors.newSingleThreadExecutor()).testFirebase()
                 true
             }
-            R.id.action_upload_session -> {
-                BgrReadingRepository.getInstance(this,  Executors.newSingleThreadExecutor()).buildAndUploadSession(this)
-                true
-            }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun toggleButtons() {
+        if (buttons.visibility.equals(View.VISIBLE)) {
+            buttons.visibility = View.GONE
+        } else {
+            buttons.visibility = View.VISIBLE
+        }
+    }
+
+    val receivingLocationUpdates: LiveData<Boolean> = repo.receivingLocationUpdates
+
+    private fun startStop() {
+        if (isRecording()) {
+            start_stop_button.setImageResource(android.R.drawable.ic_media_play)
+            stopRecording()
+        } else {
+            start_stop_button.setImageResource(android.R.drawable.ic_media_pause)
+            startRecording()
+        }
+
+    }
+
+    private fun startRecording() {
+        Toast.makeText(this, "Starting recording", Toast.LENGTH_SHORT).show()
+        repo.startLocationUpdates()
+        repo.startMotionSensorUpdates()
+    }
+
+    private fun stopRecording() {
+        Toast.makeText(this, "Stopping recording", Toast.LENGTH_SHORT).show()
+        repo.stopLocationUpdates()
+        repo.stopMotionSensorUpdates()
+        repo.buildAndUploadSession(this, {
+            repo.clearDatabase()
+            onUploadSuccess()
+        }, {
+            onUploadError(it)
+        })
+    }
+
+    private fun isRecording() : Boolean {
+        return receivingLocationUpdates.value ?: false
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {

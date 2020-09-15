@@ -9,9 +9,9 @@
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/action_colocation"
+        android:id="@+id/action_toggle_buttons"
         android:orderInCategory="100"
-        android:title="Colocation test"
+        android:title="Toggle buttons"
         app:showAsAction="never" />
 
     <item
@@ -20,9 +20,4 @@
         android:title="Test Firebase"
         app:showAsAction="never" />
 
-    <item
-        android:id="@+id/action_upload_session"
-        android:orderInCategory="100"
-        android:title="Upload session"
-        app:showAsAction="never" />
 </menu>

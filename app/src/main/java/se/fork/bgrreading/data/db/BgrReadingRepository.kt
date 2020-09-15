@@ -3,6 +3,9 @@ package se.fork.bgrreading.data.db
 import android.content.Context
 import android.widget.Toast
 import androidx.annotation.MainThread
+import androidx.lifecycle.LiveData
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import se.fork.bgrreading.data.remote.Session
 import se.fork.bgrreading.managers.LocationManager
@@ -24,6 +27,8 @@ class BgrReadingRepository private constructor(
         val dbRef = firebaseDb.reference
         dbRef.setValue("Test successful at ${Date().toString()}")
     }
+
+    val receivingLocationUpdates: LiveData<Boolean> = locationManager.receivingLocationUpdates
 
     @MainThread
     fun startLocationUpdates() = locationManager.startLocationUpdates()
@@ -71,28 +76,37 @@ class BgrReadingRepository private constructor(
     @MainThread
     fun stopMotionSensorUpdates() = motionManager.stopMotionSensorUpdates()
 
-    fun buildAndUploadSession(context: Context) {
+    fun buildAndUploadSession(context: Context, onSuccess : () -> Unit, onError : (DatabaseError) -> Unit ) {
         SessionBuilder.build(context, {
-            onSessionAggregated(it)
+            onSessionAggregated(it, onSuccess, onError)
         }, {
             onSessionAggregationError(it, context)
         })
     }
 
-    fun onSessionAggregated(session: Session) {
-        uploadSession(session)
+    fun onSessionAggregated(session: Session, onSuccess : () -> Unit, onError : (DatabaseError) -> Unit ) {
+        uploadSession(session, onSuccess, onError)
     }
 
     fun onSessionAggregationError(e:Throwable, context: Context) {
         Toast.makeText(context, "Could not aggregate session: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
     }
 
-    private fun uploadSession(session: Session) {
+    private fun uploadSession(session: Session, onSuccess : () -> Unit, onError : (DatabaseError) -> Unit ) {
         Timber.d("uploadSession: $session")
         val dbRef = firebaseDb.reference
         val key = dbRef.child("sessions").push().key
         if (key != null) {
-            dbRef.child("sessions").child(key).setValue(session)
+            dbRef.child("sessions").child(key).setValue(session, object : DatabaseReference.CompletionListener{
+                override fun onComplete(error: DatabaseError?, ref: DatabaseReference) {
+                    Timber.d("onComplete: $error")
+                    if (error != null) {
+                        onError(error)
+                    } else {
+                        onSuccess()
+                    }
+                }
+            })
         }
     }
 
