@@ -5,21 +5,22 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import java.io.Serializable
 import java.util.*
 
 @Entity(tableName = "rotation_vector", indices = arrayOf(Index(value = ["timestamp"])))
 data class RotationVector(
-    @PrimaryKey val id: UUID = UUID.randomUUID(),
-    val timestamp : Long,
+    @PrimaryKey var id: String = UUID.randomUUID().toString(),
+    var timestamp : Long = 0,
     @ColumnInfo(name = "x_rot")
-    val xRot : Float,
+    var xRot : Float = 0.0f,
     @ColumnInfo(name = "y_rot")
-    val yRot : Float,
+    var yRot : Float = 0.0f,
     @ColumnInfo(name = "z_rot")
-    val zRot : Float,
-    val rot : Float,
-    val heading : Float
-) {
+    var zRot : Float = 0.0f,
+    var rot : Float = 0.0f,
+    var heading : Float = 0.0f
+) : Serializable {
     companion object {
         fun from(event: SensorEvent) : RotationVector {
             return RotationVector(  timestamp = event.timestamp,

@@ -5,19 +5,20 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import java.io.Serializable
 import java.util.*
 
 @Entity(tableName = "linear_acceleration", indices = arrayOf(Index(value = ["timestamp"])))
 data class LinearAcceleration(
-    @PrimaryKey val id: UUID = UUID.randomUUID(),
-    val timestamp : Long,
+    @PrimaryKey var id: String = UUID.randomUUID().toString(),
+    var timestamp : Long = 0,
     @ColumnInfo(name = "x_acc")
-    val xAcc : Float,
+    var xAcc : Float = 0f,
     @ColumnInfo(name = "y_acc")
-    val yAcc : Float,
+    var yAcc : Float = 0f,
     @ColumnInfo(name = "z_acc")
-    val zAcc : Float
-) {
+    var zAcc : Float = 0f
+) : Serializable {
     companion object {
         fun from(event: SensorEvent) : LinearAcceleration {
             return LinearAcceleration(timestamp = event.timestamp,
