@@ -44,7 +44,7 @@ class MotionBroadcastReceiver : BroadcastReceiver() {
                         latitude = latitude,
                         longitude = longitude,
                         foreground = foreground,
-                        date = date
+                        timestamp = location.time
                     )
 
                 }

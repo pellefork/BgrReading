@@ -14,7 +14,7 @@ import java.util.UUID
 @Dao
 interface MyLocationDao {
 
-    @Query("SELECT * FROM my_location_table ORDER BY date DESC")
+    @Query("SELECT * FROM my_location_table ORDER BY timestamp DESC")
     fun getLocations(): Single<List<MyLocationEntity>>
 
     @Query("SELECT * FROM my_location_table WHERE id=(:id)")

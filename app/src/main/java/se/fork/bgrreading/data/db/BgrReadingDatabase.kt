@@ -12,7 +12,7 @@ import se.fork.bgrreading.data.db.RotationVectorDao
 
 private const val DATABASE_NAME = "bgr_reading_database"
 
-@Database(entities = arrayOf(MyLocationEntity::class, LinearAcceleration::class, RotationVector::class), version = 3)
+@Database(entities = arrayOf(MyLocationEntity::class, LinearAcceleration::class, RotationVector::class), version = 4)
 @TypeConverters(MyLocationTypeConverters::class)
 abstract class BgrReadingDatabase : RoomDatabase() {
     abstract fun locationDao(): MyLocationDao

@@ -36,20 +36,8 @@ class LocationUpdatesBroadcastReceiver : BroadcastReceiver() {
         if (intent.action == ACTION_PROCESS_UPDATES) {
             LocationResult.extractResult(intent)?.let { locationResult ->
                 val locations = locationResult.locations.map { location ->
-                    val latitude = location.latitude
-                    val longitude = location.longitude
-                    val foreground = isAppInForeground(context)
-                    val date = Date(location.time)
                     Timber.d("onReceive: Original location = $location")
-                    Timber.d("onReceive: Received location $date $latitude $longitude")
-
-                    MyLocationEntity(
-                        latitude = latitude,
-                        longitude = longitude,
-                        foreground = foreground,
-                        date = date
-                    )
-
+                    MyLocationEntity.from(location)
                 }
                 if (locations.isNotEmpty()) {
                     BgrReadingRepository.getInstance(context, Executors.newSingleThreadExecutor())
