@@ -13,6 +13,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.PolylineOptions
 import se.fork.bgrreading.data.remote.Session
 import timber.log.Timber
 
@@ -52,6 +53,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
         zoomToSession()
+        drawPolyLine()
     }
 
     private fun zoomToSession() {
@@ -75,5 +77,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val result = FloatArray(1)
         Location.distanceBetween(a.latitude, a.longitude, b.latitude, b.longitude, result)
         return result.get(0)
+    }
+
+    private fun drawPolyLine() {
+        val polyLineOptions = PolylineOptions()
+            .addAll(session.locations.map {
+                LatLng(it.latitude, it.longitude)
+            })
+        map.addPolyline(polyLineOptions)
     }
 }
