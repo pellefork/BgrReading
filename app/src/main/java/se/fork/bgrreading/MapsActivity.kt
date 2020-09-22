@@ -1,18 +1,25 @@
 package se.fork.bgrreading
 
+import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.TimePicker
+import android.widget.Toast
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
+import se.fork.bgrreading.data.remote.Session
+import timber.log.Timber
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
-    private lateinit var mMap: GoogleMap
+    private lateinit var map: GoogleMap
+    private lateinit var session: Session
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,6 +28,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (intent.hasExtra("session")) {
+            session = intent.getSerializableExtra("session") as Session
+            Timber.d("onStart: Got Session $session")
+        } else {
+            Toast.makeText(this, "No session data provided", Toast.LENGTH_SHORT).show()
+        }
     }
 
     /**
@@ -33,11 +50,30 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
      * installed Google Play services and returned to the app.
      */
     override fun onMapReady(googleMap: GoogleMap) {
-        mMap = googleMap
+        map = googleMap
+        zoomToSession()
+    }
 
-        // Add a marker in Sydney and move the camera
-        val sydney = LatLng(-34.0, 151.0)
-        mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+    private fun zoomToSession() {
+        val boundsBuilder = LatLngBounds.builder()
+        for (location in session.locations) {
+            boundsBuilder.include(LatLng(location.latitude, location.longitude))
+        }
+        val bounds = boundsBuilder.build()
+        val size = distanceBetween(bounds.southwest, bounds.northeast)
+
+        if (size > 50f) {
+            Timber.d("zoomToSession: session greater than 50 m: $size")
+            map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50))
+        } else {
+            Timber.d("zoomToSession: session less than 50 m: $size")
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(bounds.center, 15.0f))
+        }
+    }
+
+    private fun distanceBetween(a: LatLng, b: LatLng) : Float {
+        val result = FloatArray(1)
+        Location.distanceBetween(a.latitude, a.longitude, b.latitude, b.longitude, result)
+        return result.get(0)
     }
 }
