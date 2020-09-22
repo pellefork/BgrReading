@@ -35,6 +35,7 @@ class SessionAdapter(options: FirebaseRecyclerOptions<Session>) : FirebaseRecycl
 class SessionViewHolder(val customView: View, var session: Session? = null) : RecyclerView.ViewHolder(customView) {
 
     fun bind(session: Session) {
+        Timber.d("bind: $session")
         with(session) {
             customView.session_name?.text = session.name
             customView.locations_text?.text = session.locations.size.toString()

@@ -40,7 +40,8 @@ class LocationUpdatesBroadcastReceiver : BroadcastReceiver() {
                     val longitude = location.longitude
                     val foreground = isAppInForeground(context)
                     val date = Date(location.time)
-                    Timber.d("Received location $date $latitude $longitude")
+                    Timber.d("onReceive: Original location = $location")
+                    Timber.d("onReceive: Received location $date $latitude $longitude")
 
                     MyLocationEntity(
                         latitude = latitude,

@@ -37,6 +37,7 @@ class SessionListActivity : AppCompatActivity() {
 
         val adapter = SessionAdapter(options)
         recycler.adapter = adapter
+        adapter.startListening()
     }
 
     private fun initializeRecycler() {
