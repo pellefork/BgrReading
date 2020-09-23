@@ -71,7 +71,9 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@+id/buttons"
         android:gravity="center_horizontal"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:visibility="gone"
+        >
 
         <TextView
             android:id="@+id/label_readings_location"
@@ -102,19 +104,17 @@
             android:textSize="24sp"
             android:layout_marginTop="@dimen/normal_margin"
             tools:text="000"/>
-
-
-        <ImageButton
-            android:id="@+id/start_stop_button"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginTop="@dimen/normal_margin"
-            android:src="@android:drawable/ic_media_play"
-            android:tint="@color/colorPrimaryDark"
-            android:background="@color/colorAccent"/>
-
     </LinearLayout>
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/large_margin"
+        android:clipToPadding="false"
+        app:layout_constraintTop_toBottomOf="@+id/output_pane"
+        tools:listitem="@layout/listitem_session"
+        tools:itemCount="5"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

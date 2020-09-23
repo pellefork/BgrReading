@@ -12,12 +12,19 @@ import android.view.View
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.LiveData
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
+import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
+import se.fork.bgrreading.adapters.SessionAdapter
 import se.fork.bgrreading.data.db.BgrReadingRepository
+import se.fork.bgrreading.data.remote.Session
 import se.fork.bgrreading.extensions.launchActivity
 import se.fork.bgrreading.extensions.onClickWithDebounce
 import timber.log.Timber
@@ -38,6 +45,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbar))
         setupClickListeners()
+        initializeRecycler()
         requestPermission()
         requestBackgroundPermission()
         authenticate()
@@ -63,6 +71,7 @@ class MainActivity : AppCompatActivity() {
                 val user = FirebaseAuth.getInstance().currentUser
                 val name  = user?.displayName
                 Toast.makeText(this, "Logged in as $name.", Toast.LENGTH_SHORT).show()
+                fetchData()
             } else {
                 Toast.makeText(this, "Inloggningen sket sig", Toast.LENGTH_SHORT).show()
             }
@@ -99,7 +108,7 @@ class MainActivity : AppCompatActivity() {
             })
         }
 
-        start_stop_button.onClickWithDebounce {
+        fab.onClickWithDebounce {
             Timber.d("stopLocationUpdates")
             startStop()
         }
@@ -153,10 +162,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun startStop() {
         if (isRecording()) {
-            start_stop_button.setImageResource(android.R.drawable.ic_media_play)
+            fab.setImageResource(android.R.drawable.ic_input_add)
             stopRecording()
         } else {
-            start_stop_button.setImageResource(android.R.drawable.ic_media_pause)
+            fab.setImageResource(android.R.drawable.ic_media_pause)
             startRecording()
         }
 
@@ -227,4 +236,31 @@ class MainActivity : AppCompatActivity() {
     private fun handlePermissionForForeground() {
 
     }
+
+    private fun fetchData() {
+        Timber.d("fetchData")
+        val query = FirebaseDatabase.getInstance()
+            .reference
+            .child("sessions")
+            .limitToLast(50)
+
+        val options = FirebaseRecyclerOptions.Builder<Session>()
+            .setQuery(query, Session::class.java)
+            .setLifecycleOwner(this)
+            .build()
+
+        val adapter = SessionAdapter(options)
+        recycler.adapter = adapter
+        adapter.startListening()
+    }
+
+    private fun initializeRecycler() {
+        val gridLayoutManager = GridLayoutManager(this, 1)
+        gridLayoutManager.orientation = RecyclerView.VERTICAL
+
+        recycler.apply {
+            layoutManager = gridLayoutManager
+        }
+    }
+
 }
