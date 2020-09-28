@@ -23,7 +23,7 @@ data class RotationVector(
 ) : Serializable {
     companion object {
         fun from(event: SensorEvent) : RotationVector {
-            return RotationVector(  timestamp = event.timestamp,
+            return RotationVector(  timestamp = System.currentTimeMillis(),
                                     xRot = event.values.get(0),
                                     yRot = event.values.get(1),
                                     zRot = event.values.get(2),

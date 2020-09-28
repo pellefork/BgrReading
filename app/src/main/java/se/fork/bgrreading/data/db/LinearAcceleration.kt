@@ -21,7 +21,7 @@ data class LinearAcceleration(
 ) : Serializable {
     companion object {
         fun from(event: SensorEvent) : LinearAcceleration {
-            return LinearAcceleration(timestamp = event.timestamp,
+            return LinearAcceleration(timestamp = System.currentTimeMillis(),
             xAcc = event.values.get(0),
             yAcc = event.values.get(1),
             zAcc = event.values.get(2))
