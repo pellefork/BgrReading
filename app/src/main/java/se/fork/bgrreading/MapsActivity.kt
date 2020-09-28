@@ -1,31 +1,41 @@
 package se.fork.bgrreading
 
 import android.location.Location
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.TimePicker
 import android.widget.Toast
-
+import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
-import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.functions.BiFunction
+import io.reactivex.rxkotlin.addTo
+import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.activity_maps.*
+import se.fork.bgrreading.adapters.HorizontalGauge
 import se.fork.bgrreading.data.remote.Session
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var map: GoogleMap
     private lateinit var session: Session
+    private var compositeDisposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+
+        setupGauges()
+
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
@@ -54,6 +64,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         map = googleMap
         zoomToSession()
         drawPolyLine()
+        testGauge()
     }
 
     private fun zoomToSession() {
@@ -85,5 +96,44 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 LatLng(it.latitude, it.longitude)
             })
         map.addPolyline(polyLineOptions)
+    }
+
+    // -------------------------------------- Sensor reading data rendering ---------------------------------------------
+
+    lateinit var xAccGauge: HorizontalGauge
+    lateinit var yAccGauge: HorizontalGauge
+    lateinit var zAccGauge: HorizontalGauge
+
+    lateinit var xRotGauge: HorizontalGauge
+    lateinit var yRotGauge: HorizontalGauge
+    lateinit var zRotGauge: HorizontalGauge
+    lateinit var rotGauge: HorizontalGauge
+
+    private fun setupGauges() {
+        xAccGauge = HorizontalGauge(acc_x)
+        yAccGauge = HorizontalGauge(acc_y)
+        zAccGauge = HorizontalGauge(acc_z)
+
+        xRotGauge = HorizontalGauge(rot_x)
+        yRotGauge = HorizontalGauge(rot_y)
+        zRotGauge = HorizontalGauge(rot_z)
+        rotGauge = HorizontalGauge(rot)
+    }
+
+    private fun testGauge() {
+        xAccGauge.range = 100f
+
+        Observable.just(45, -20, 80, 50, -34, -45, -30, 100)
+            .zipWith(
+                Observable.interval(1500, TimeUnit.MILLISECONDS),
+                BiFunction<Int, Long, Int?> { item: Int?, interval: Long? -> item!! })
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe {
+                    x: Int? -> x?.let {
+                    xAccGauge.setValue(x.toFloat())
+                }
+            }
+            .addTo(compositeDisposable)
     }
 }
