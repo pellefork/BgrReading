@@ -10,6 +10,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.PolylineOptions
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -19,14 +20,20 @@ import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_maps.*
 import se.fork.bgrreading.adapters.HorizontalGauge
+import se.fork.bgrreading.data.MovementSnapshot
+import se.fork.bgrreading.data.TimeLapse
 import se.fork.bgrreading.data.remote.Session
+import se.fork.bgrreading.extensions.delayEach
+import se.fork.bgrreading.managers.TimeLapseBuilder
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var map: GoogleMap
-    private lateinit var session: Session
+    private lateinit var currentSession: Session
+    private var currentPath = mutableListOf<LatLng>()
+    private var currentPolyline: Polyline? = null
     private var compositeDisposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,8 +51,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onStart() {
         super.onStart()
         if (intent.hasExtra("session")) {
-            session = intent.getSerializableExtra("session") as Session
-            Timber.d("onStart: Got Session $session")
+            currentSession = intent.getSerializableExtra("session") as Session
+            Timber.d("onStart: Got Session $currentSession")
         } else {
             Toast.makeText(this, "No session data provided", Toast.LENGTH_SHORT).show()
         }
@@ -63,13 +70,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
         zoomToSession()
-        drawPolyLine()
+        playSession()
         testGauge()
     }
 
     private fun zoomToSession() {
         val boundsBuilder = LatLngBounds.builder()
-        for (location in session.locations) {
+        for (location in currentSession.locations) {
             boundsBuilder.include(LatLng(location.latitude, location.longitude))
         }
         val bounds = boundsBuilder.build()
@@ -90,12 +97,54 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         return result.get(0)
     }
 
-    private fun drawPolyLine() {
+    private fun drawFullSessionPolyLine() {
         val polyLineOptions = PolylineOptions()
-            .addAll(session.locations.map {
+            .addAll(currentSession.locations.map {
                 LatLng(it.latitude, it.longitude)
             })
         map.addPolyline(polyLineOptions)
+    }
+
+    private fun playSession() {
+        val timeLapse = TimeLapseBuilder().apply {
+            frameRate = 30
+            session = currentSession
+        }.build()
+
+        playTimeLapse(timeLapse)
+    }
+
+    private fun playTimeLapse(timeLapse: TimeLapse) {
+        for (i in 0..(timeLapse.maxIndex)) {
+            val frame = timeLapse.movements.valueAt(i)
+            frame?.let {
+                Timber.d("playTimeLapse: Index $i frame $frame")
+                renderFrame(it)
+            }
+        }
+    }
+
+    private fun renderPosition(frame: MovementSnapshot) {
+        val position = frame.position
+        position?.let {
+            val loc = LatLng(position.latitude, position.longitude)
+            currentPath.add(loc)
+            currentPolyline?.let {
+                currentPolyline?.remove()
+                currentPolyline = null
+            }
+            if (currentPath.size > 1) {
+                val polyLineOptions = PolylineOptions()
+                    .addAll(currentPath)
+                map.addPolyline(polyLineOptions)
+            }
+        }
+    }
+
+    private fun renderFrame(frame: MovementSnapshot) {
+        renderPosition(frame)
+        renderAcceleration(frame)
+        renderRotation(frame)
     }
 
     // -------------------------------------- Sensor reading data rendering ---------------------------------------------
@@ -109,22 +158,72 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     lateinit var zRotGauge: HorizontalGauge
     lateinit var rotGauge: HorizontalGauge
 
-    private fun setupGauges() {
-        xAccGauge = HorizontalGauge(acc_x)
-        yAccGauge = HorizontalGauge(acc_y)
-        zAccGauge = HorizontalGauge(acc_z)
+    private fun renderAcceleration(frame: MovementSnapshot) {
+        frame.acceleration?.let {
+            xAccGauge.setValue(it.xAcc)
+            yAccGauge.setValue(it.yAcc)
+            zAccGauge.setValue(it.zAcc)
+        }
+    }
 
-        xRotGauge = HorizontalGauge(rot_x)
-        yRotGauge = HorizontalGauge(rot_y)
-        zRotGauge = HorizontalGauge(rot_z)
-        rotGauge = HorizontalGauge(rot)
+    private fun renderRotation(frame: MovementSnapshot) {
+        frame.rotation?.let {
+            xRotGauge.setValue(it.xRot)
+            yRotGauge.setValue(it.yRot)
+            zRotGauge.setValue(it.zRot)
+            rotGauge.setValue(it.rot)
+        }
+    }
+
+    private fun setupGauges() {
+        xAccGauge = HorizontalGauge(acc_x).apply {
+            range = 10f
+            legend = "X Acc"
+        }
+        xAccGauge.setValue(0f)
+
+        yAccGauge = HorizontalGauge(acc_y).apply {
+            range = 10f
+            legend = "Y Acc"
+        }
+        yAccGauge.setValue(0f)
+
+        zAccGauge = HorizontalGauge(acc_z).apply {
+            range = 10f
+            legend = "Z Acc"
+        }
+        zAccGauge.setValue(0f)
+
+        xRotGauge = HorizontalGauge(rot_x).apply {
+            range = 1f
+            legend = "X Rot"
+        }
+        xRotGauge.setValue(0f)
+
+        yRotGauge = HorizontalGauge(rot_y).apply {
+            range = 1f
+            legend = "Y Rot"
+        }
+        yRotGauge.setValue(0f)
+
+        zRotGauge = HorizontalGauge(rot_z).apply {
+            range = 1f
+            legend = "Z Rot"
+        }
+        zRotGauge.setValue(0f)
+
+        rotGauge = HorizontalGauge(rot).apply {
+            range = 1f
+            legend = "Rot"
+        }
+        rotGauge.setValue(0f)
     }
 
     private fun testGauge() {
         xAccGauge.range = 100f
-        xAccGauge.legend = "X Acc"
+        // xAccGauge.legend = "X Acc"
 
-        Observable.just(45, -20, 80, 50, -34, -45, -30, 100, -100)
+        Observable.just(45, -20, 80, 0, -34, -45, -30, 100, -100)
             .zipWith(
                 Observable.interval(1500, TimeUnit.MILLISECONDS),
                 BiFunction<Int, Long, Int?> { item: Int?, interval: Long? -> item!! })

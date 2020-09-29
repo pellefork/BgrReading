@@ -23,6 +23,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/normal_margin"
             android:text="Accelerations:"/>
 
         <include android:id="@+id/acc_x" layout="@layout/layout_horiz_gauge"/>
@@ -32,6 +33,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/normal_margin"
             android:text="Rotations:"/>
 
         <include android:id="@+id/rot_x" layout="@layout/layout_horiz_gauge"/>

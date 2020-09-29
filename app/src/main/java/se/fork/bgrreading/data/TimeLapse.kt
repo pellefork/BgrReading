@@ -5,6 +5,7 @@ import se.fork.bgrreading.data.remote.Session
 
 class TimeLapse {
     var frameRate : Int = 30
+    var maxIndex : Int = 0
     val movements: SparseArray<MovementSnapshot> = SparseArray()
 
     companion object {

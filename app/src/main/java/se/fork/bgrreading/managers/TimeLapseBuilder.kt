@@ -64,6 +64,7 @@ class TimeLapseBuilder {
                                         rotation = rotationMap.get(frameNo))
             if (frame.isNonEmpty) {
                 timeLapse.movements.append(frameNo, frame)
+                timeLapse.maxIndex = frameNo
             }
         }
         return timeLapse

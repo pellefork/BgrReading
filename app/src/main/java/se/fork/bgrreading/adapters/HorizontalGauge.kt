@@ -34,15 +34,23 @@ class HorizontalGauge(val root: View) {
 
         val size = toPixels()
         Timber.d("setValue: Width in pixels: $size")
-        if (currentValue < 0f) {
-            setLeftSizeInPixels(size)
-            if (isChangingSign())
-                setRightSizeInPixels(0)
-        } else {
-            setRightSizeInPixels(size)
-            if (isChangingSign())
+        when (currentValue.sign) {
+            -1f -> {
+                setLeftSizeInPixels(size)
+                if (isChangingSign())
+                    setRightSizeInPixels(0)
+            }
+            0f -> {
                 setLeftSizeInPixels(0)
+                setRightSizeInPixels(0)
+            }
+            1f -> {
+                setRightSizeInPixels(size)
+                if (isChangingSign())
+                    setLeftSizeInPixels(0)
+            }
         }
+
         lastValue = value
     }
     
