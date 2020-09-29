@@ -122,8 +122,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun testGauge() {
         xAccGauge.range = 100f
+        xAccGauge.legend = "X Acc"
 
-        Observable.just(45, -20, 80, 50, -34, -45, -30, 100)
+        Observable.just(45, -20, 80, 50, -34, -45, -30, 100, -100)
             .zipWith(
                 Observable.interval(1500, TimeUnit.MILLISECONDS),
                 BiFunction<Int, Long, Int?> { item: Int?, interval: Long? -> item!! })
