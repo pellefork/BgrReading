@@ -1,0 +1,11 @@
+
+-   Visa kompassnål för bäring i uppspelning (kanske både från location- och rotationobjekten)
+-   Visa hastighetsmätare
+
+-   Play/pause-knapp i uppspelningen
+    -   Klyv layouten i activity/content för CoordinatorLayout
+    -   Visa knappen först när sessionen är laddad och kartan klar
+
+-   Kunna spela upp från viss frame
+
+-   Kunna välja att spela upp från annan user

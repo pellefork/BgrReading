@@ -77,7 +77,7 @@ class MainActivity : AppCompatActivity(), SessionSwipeHelper.RecyclerItemTouchHe
                 Toast.makeText(this, "Logged in as $name.", Toast.LENGTH_SHORT).show()
                 fetchData()
             } else {
-                Toast.makeText(this, "Inloggningen sket sig", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Login failed ${response.toString()}", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -119,7 +119,7 @@ class MainActivity : AppCompatActivity(), SessionSwipeHelper.RecyclerItemTouchHe
     }
 
     private fun onUploadSuccess() {
-        Toast.makeText(this, "Session uploaded", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, getString(R.string.toast_session_uploaded), Toast.LENGTH_SHORT).show()
     }
 
     private fun onUploadError(error: DatabaseError) {
@@ -172,13 +172,13 @@ class MainActivity : AppCompatActivity(), SessionSwipeHelper.RecyclerItemTouchHe
     }
 
     private fun startRecording() {
-        Toast.makeText(this, "Starting recording", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, getString(R.string.toast_starting_recording), Toast.LENGTH_SHORT).show()
         repo.startLocationUpdates()
         repo.startMotionSensorUpdates()
     }
 
     private fun stopRecording() {
-        Toast.makeText(this, "Stopping recording", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, getString(R.string.toast_stopping_recording), Toast.LENGTH_SHORT).show()
         repo.stopLocationUpdates()
         repo.stopMotionSensorUpdates()
         repo.buildAndUploadSession(this, {
@@ -277,13 +277,13 @@ class MainActivity : AppCompatActivity(), SessionSwipeHelper.RecyclerItemTouchHe
         val session = (recycler.adapter as SessionAdapter).getItem(position)
         val sessionId = session.id
         val builder = AlertDialog.Builder(this)
-        builder.setTitle("Delete?")
+        builder.setTitle(getString(R.string.title_delete_alert))
         builder.setMessage("Delete session ${session.name}?")
-        builder.setPositiveButton("Yes") { dialog, which ->
+        builder.setPositiveButton(getString(R.string.button_general_ok)) { dialog, which ->
             deleteSession(sessionId)
             dialog.dismiss()
         }
-        builder.setNegativeButton("No") { dialog, which ->
+        builder.setNegativeButton(getString(R.string.button_general_cancel)) { dialog, which ->
             (recycler.adapter as SessionAdapter).notifyDataSetChanged()
             dialog.cancel()
         }

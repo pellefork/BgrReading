@@ -2,6 +2,7 @@ package se.fork.bgrreading
 
 import android.location.Location
 import android.os.Bundle
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.util.valueIterator
@@ -155,6 +156,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     .addAll(currentPath)
                 map.addPolyline(polyLineOptions)
             }
+            bearing_pos.findViewById<ImageView>(R.id.arrow).rotation = it.bearing
         }
     }
 
@@ -189,6 +191,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             yRotGauge.setValue(it.yRot)
             zRotGauge.setValue(it.zRot)
             rotGauge.setValue(it.rot)
+            bearing_rot.findViewById<ImageView>(R.id.arrow).rotation = it.heading
         }
     }
 

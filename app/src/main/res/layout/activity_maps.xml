@@ -41,6 +41,34 @@
         <include android:id="@+id/rot_z" layout="@layout/layout_horiz_gauge"/>
         <include android:id="@+id/rot" layout="@layout/layout_horiz_gauge"/>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/normal_margin"
+            android:text="Bearing (pos)"/>
+
+        <include
+            android:id="@+id/bearing_pos"
+            layout="@layout/layout_bearing_dial"
+            android:layout_height="36dp"
+            android:layout_width="36dp"
+            android:layout_margin="@dimen/normal_margin"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/normal_margin"
+            android:text="Bearing (rot)"/>
+
+        <include
+            android:id="@+id/bearing_rot"
+            layout="@layout/layout_bearing_dial"
+            android:layout_height="36dp"
+            android:layout_width="36dp"
+            android:layout_margin="@dimen/normal_margin"/>
+
+
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
