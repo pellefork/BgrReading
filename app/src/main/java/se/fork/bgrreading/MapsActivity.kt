@@ -84,10 +84,18 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
         val bounds = boundsBuilder.build()
         val size = distanceBetween(bounds.southwest, bounds.northeast)
+        Timber.d("zoomToSession: bounds = $bounds")
 
         if (size > 50f) {
             Timber.d("zoomToSession: session greater than 50 m: $size")
-            map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50))
+            val width = resources.displayMetrics.widthPixels
+            val height = resources.displayMetrics.heightPixels
+            val padding = (height * 0.12).toInt() // offset from edges of the map 12% of screen
+
+            val cu = CameraUpdateFactory.newLatLngBounds(bounds, width, height, padding)
+
+            map.animateCamera(cu)
+            // map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 10))
         } else {
             Timber.d("zoomToSession: session less than 50 m: $size")
             map.animateCamera(CameraUpdateFactory.newLatLngZoom(bounds.center, 15.0f))

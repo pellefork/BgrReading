@@ -13,8 +13,6 @@ import timber.log.Timber
 import java.util.Date
 import java.util.concurrent.Executors
 
-private const val TAG = "LUBroadcastReceiver"
-
 /**
  * Receiver for handling location updates.
  *
@@ -31,7 +29,7 @@ private const val TAG = "LUBroadcastReceiver"
 class LocationUpdatesBroadcastReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
-        Log.d(TAG, "onReceive() context:$context, intent:$intent")
+        Timber.d("onReceive() context:$context, intent:$intent")
 
         if (intent.action == ACTION_PROCESS_UPDATES) {
             LocationResult.extractResult(intent)?.let { locationResult ->

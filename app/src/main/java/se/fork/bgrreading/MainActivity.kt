@@ -280,6 +280,7 @@ class MainActivity : AppCompatActivity(), SessionSwipeHelper.RecyclerItemTouchHe
             dialog.dismiss()
         }
         builder.setNegativeButton("No") { dialog, which ->
+            (recycler.adapter as SessionAdapter).notifyDataSetChanged()
             dialog.cancel()
         }
         val dialog: AlertDialog = builder.create()
