@@ -10,9 +10,12 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.LiveData
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
@@ -23,6 +26,7 @@ import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import se.fork.bgrreading.adapters.SessionAdapter
+import se.fork.bgrreading.adapters.SessionSwipeHelper
 import se.fork.bgrreading.data.db.BgrReadingRepository
 import se.fork.bgrreading.data.remote.Session
 import se.fork.bgrreading.extensions.launchActivity
@@ -32,7 +36,7 @@ import java.util.concurrent.Executors
 
 private const val RC_SIGN_IN = 4711
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), SessionSwipeHelper.RecyclerItemTouchHelperListener {
 
     companion object {
         const val REQUEST_CODE_FOREGROUND = 1544
@@ -257,6 +261,33 @@ class MainActivity : AppCompatActivity() {
         recycler.apply {
             layoutManager = gridLayoutManager
         }
+
+        // Set up swipe to delete
+
+        recycler.itemAnimator = DefaultItemAnimator()
+        val itemCallback = SessionSwipeHelper(0, ItemTouchHelper.LEFT, this)
+        ItemTouchHelper(itemCallback).attachToRecyclerView(recycler)
     }
 
+    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int, position: Int) {
+        val session = (recycler.adapter as SessionAdapter).getItem(position)
+        val sessionId = session.id
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Delete?")
+        builder.setMessage("Delete session ${session.name}?")
+        builder.setPositiveButton("Yes") { dialog, which ->
+            deleteSession(sessionId)
+            dialog.dismiss()
+        }
+        builder.setNegativeButton("No") { dialog, which ->
+            dialog.cancel()
+        }
+        val dialog: AlertDialog = builder.create()
+        dialog.show()
+    }
+
+    private fun deleteSession(id: String) {
+        Toast.makeText(this, "Deleting $id", Toast.LENGTH_SHORT).show()
+        repo.deleteSession(id)
+    }
 }

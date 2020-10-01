@@ -7,6 +7,7 @@ import java.io.Serializable
 import java.util.*
 
 data class Session(
+    var id : String = "",
     var name: String = "",
     var uploadDate: Date = Date(),
     var locations : List<MyLocationEntity> = listOf(),

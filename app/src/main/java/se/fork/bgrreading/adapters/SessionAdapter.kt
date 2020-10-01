@@ -33,6 +33,8 @@ class SessionAdapter(options: FirebaseRecyclerOptions<Session>) : FirebaseRecycl
 }
 
 class SessionViewHolder(val customView: View, var session: Session? = null) : RecyclerView.ViewHolder(customView) {
+    val foregroundView = customView.card_foreground
+    val backgroundView = customView.card_background
 
     fun bind(session: Session) {
         Timber.d("bind: $session")

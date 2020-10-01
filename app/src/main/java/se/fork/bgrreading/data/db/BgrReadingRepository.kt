@@ -92,11 +92,17 @@ class BgrReadingRepository private constructor(
         Toast.makeText(context, "Could not aggregate session: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
     }
 
+    fun deleteSession(sessionId : String) {
+        val dbRef = firebaseDb.reference
+        dbRef.child("sessions").child(sessionId).setValue(null)
+    }
+
     private fun uploadSession(session: Session, onSuccess : () -> Unit, onError : (DatabaseError) -> Unit ) {
         Timber.d("uploadSession: $session")
         val dbRef = firebaseDb.reference
         val key = dbRef.child("sessions").push().key
         if (key != null) {
+            session.id = key
             dbRef.child("sessions").child(key).setValue(session, object : DatabaseReference.CompletionListener{
                 override fun onComplete(error: DatabaseError?, ref: DatabaseReference) {
                     Timber.d("onComplete: $error")
