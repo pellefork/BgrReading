@@ -239,19 +239,23 @@ class MainActivity : AppCompatActivity(), SessionSwipeHelper.RecyclerItemTouchHe
 
     private fun fetchData() {
         Timber.d("fetchData")
-        val query = FirebaseDatabase.getInstance()
-            .reference
-            .child("sessions")
-            .limitToLast(50)
+        val uid = FirebaseAuth.getInstance().currentUser?.uid
+        uid?.let {
+            val query = FirebaseDatabase.getInstance()
+                .reference
+                .child("users").child(uid)
+                .child("sessions")
+                .limitToLast(50)
 
-        val options = FirebaseRecyclerOptions.Builder<Session>()
-            .setQuery(query, Session::class.java)
-            .setLifecycleOwner(this)
-            .build()
+            val options = FirebaseRecyclerOptions.Builder<Session>()
+                .setQuery(query, Session::class.java)
+                .setLifecycleOwner(this)
+                .build()
 
-        val adapter = SessionAdapter(options)
-        recycler.adapter = adapter
-        adapter.startListening()
+            val adapter = SessionAdapter(options)
+            recycler.adapter = adapter
+            adapter.startListening()
+        }
     }
 
     private fun initializeRecycler() {

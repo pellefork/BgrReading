@@ -4,6 +4,7 @@ import android.content.Context
 import android.widget.Toast
 import androidx.annotation.MainThread
 import androidx.lifecycle.LiveData
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -94,25 +95,32 @@ class BgrReadingRepository private constructor(
 
     fun deleteSession(sessionId : String) {
         val dbRef = firebaseDb.reference
-        dbRef.child("sessions").child(sessionId).setValue(null)
+        val uid = FirebaseAuth.getInstance().currentUser?.uid
+        uid?.let {
+            dbRef.child("users").child(uid).child("sessions").child(sessionId).setValue(null)
+        }
     }
 
     private fun uploadSession(session: Session, onSuccess : () -> Unit, onError : (DatabaseError) -> Unit ) {
         Timber.d("uploadSession: $session")
         val dbRef = firebaseDb.reference
-        val key = dbRef.child("sessions").push().key
-        if (key != null) {
-            session.id = key
-            dbRef.child("sessions").child(key).setValue(session, object : DatabaseReference.CompletionListener{
-                override fun onComplete(error: DatabaseError?, ref: DatabaseReference) {
-                    Timber.d("onComplete: $error")
-                    if (error != null) {
-                        onError(error)
-                    } else {
-                        onSuccess()
+        val uid = FirebaseAuth.getInstance().currentUser?.uid
+
+        uid?.let {
+            val key = dbRef.child("users").child(uid).child("sessions").push().key
+            if (key != null) {
+                session.id = key
+                dbRef.child("users").child(uid).child("sessions").child(key).setValue(session, object : DatabaseReference.CompletionListener{
+                    override fun onComplete(error: DatabaseError?, ref: DatabaseReference) {
+                        Timber.d("onComplete: $error")
+                        if (error != null) {
+                            onError(error)
+                        } else {
+                            onSuccess()
+                        }
                     }
-                }
-            })
+                })
+            }
         }
     }
 
