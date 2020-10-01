@@ -4,6 +4,7 @@ import android.location.Location
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.util.valueIterator
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -12,7 +13,9 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.PolylineOptions
+import io.reactivex.Flowable
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
@@ -71,7 +74,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         map = googleMap
         zoomToSession()
         playSession()
-        testGauge()
+        // testGauge()
     }
 
     private fun zoomToSession() {
@@ -115,13 +118,19 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun playTimeLapse(timeLapse: TimeLapse) {
-        for (i in 0..(timeLapse.maxIndex)) {
-            val frame = timeLapse.movements.valueAt(i)
-            frame?.let {
-                Timber.d("playTimeLapse: Index $i frame $frame")
+        val frameLapse = 1000 / timeLapse.frameRate
+        Observable.fromArray(timeLapse.movements)
+            .flatMapIterable { it }
+            .delayEach(frameLapse.toLong(), TimeUnit.MILLISECONDS)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                Timber.d("playTimeLapse: Rendering $it")
                 renderFrame(it)
-            }
-        }
+            }, {
+                Timber.e(it, "playTimeLapse: Went wrong")
+            })
+            .addTo(compositeDisposable)
     }
 
     private fun renderPosition(frame: MovementSnapshot) {

@@ -30,5 +30,26 @@ data class RotationVector(
                                     rot = event.values.get(3),
                                     heading = event.values.get(4))
         }
+
+        fun from(rotationList : List<RotationVector>) : RotationVector? {
+            when (rotationList.size) {
+                0 -> {
+                    return null
+                }
+                1 -> {
+                    return rotationList.get(0)
+                }
+                else -> {
+                    return RotationVector(
+                        timestamp = rotationList.minBy { x -> x.timestamp }!!.timestamp,
+                        xRot = rotationList.map { it.xRot }.average().toFloat(),
+                        yRot = rotationList.map { it.yRot }.average().toFloat(),
+                        zRot = rotationList.map { it.zRot }.average().toFloat(),
+                        rot = rotationList.map { it.rot }.average().toFloat(),
+                        heading = rotationList.map { it.heading }.average().toFloat()
+                    )
+                }
+            }
+        }
     }
 }

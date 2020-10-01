@@ -6,6 +6,8 @@ import se.fork.bgrreading.data.db.RotationVector
 
 data class MovementSnapshot (
     val frameNo : Int = -1,
+    val frameStart : Long = -1,
+    val frameEnd : Long = -1,
     val position: MyLocationEntity? = null,
     val acceleration : LinearAcceleration? = null,
     val rotation: RotationVector? = null

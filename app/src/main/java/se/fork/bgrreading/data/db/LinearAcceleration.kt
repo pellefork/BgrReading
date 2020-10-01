@@ -26,5 +26,23 @@ data class LinearAcceleration(
             yAcc = event.values.get(1),
             zAcc = event.values.get(2))
         }
+        fun from(accelerationList : List<LinearAcceleration>) : LinearAcceleration? {
+            when (accelerationList.size) {
+                0 -> {
+                    return null
+                }
+                1 -> {
+                    return accelerationList.get(0)
+                }
+                else -> {
+                    return LinearAcceleration(
+                        timestamp = accelerationList.minBy { x -> x.timestamp }!!.timestamp,
+                        xAcc = accelerationList.map { it.xAcc }.average().toFloat(),
+                        yAcc = accelerationList.map { it.yAcc }.average().toFloat(),
+                        zAcc = accelerationList.map { it.zAcc }.average().toFloat()
+                    )
+                }
+            }
+        }
     }
 }
