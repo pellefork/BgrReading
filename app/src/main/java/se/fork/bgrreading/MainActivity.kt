@@ -29,6 +29,7 @@ import se.fork.bgrreading.adapters.SessionAdapter
 import se.fork.bgrreading.adapters.SessionSwipeHelper
 import se.fork.bgrreading.data.db.BgrReadingRepository
 import se.fork.bgrreading.data.remote.Session
+import se.fork.bgrreading.data.remote.SessionHeader
 import se.fork.bgrreading.extensions.launchActivity
 import se.fork.bgrreading.extensions.onClickWithDebounce
 import timber.log.Timber
@@ -244,11 +245,11 @@ class MainActivity : AppCompatActivity(), SessionSwipeHelper.RecyclerItemTouchHe
             val query = FirebaseDatabase.getInstance()
                 .reference
                 .child("users").child(uid)
-                .child("sessions")
+                .child("sessionHeaders")
                 .limitToLast(50)
 
-            val options = FirebaseRecyclerOptions.Builder<Session>()
-                .setQuery(query, Session::class.java)
+            val options = FirebaseRecyclerOptions.Builder<SessionHeader>()
+                .setQuery(query, SessionHeader::class.java)
                 .setLifecycleOwner(this)
                 .build()
 

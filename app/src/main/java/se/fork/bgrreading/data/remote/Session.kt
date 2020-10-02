@@ -8,8 +8,6 @@ import java.util.*
 
 data class Session(
     var id : String = "",
-    var name: String = "",
-    var uploadDate: Date = Date(),
     var locations : List<MyLocationEntity> = listOf(),
     var accelerations: List<LinearAcceleration> = listOf(),
     var rotations: List<RotationVector> = listOf()

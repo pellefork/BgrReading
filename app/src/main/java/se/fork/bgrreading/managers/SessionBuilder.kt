@@ -54,7 +54,7 @@ object SessionBuilder {
             .subscribe({
                 rotationList = it
                 Timber.d("getRotationVectors done: $it")
-                val session = Session("","Session " +  Date().toString(), Date(), locationList, accelerationList, rotationList)
+                val session = Session("", locationList, accelerationList, rotationList)
                 onAllDone(session)
             }, {
                 Timber.e(it, "Could not getRotationVectors")

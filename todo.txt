@@ -1,7 +1,7 @@
 
 -   Visa kompassnål för bäring i uppspelning (kanske både från location- och rotationobjekten)
 -   Visa hastighetsmätare
-
+-   Visa osäkerhet i position som blå cirkel
 -   Play/pause-knapp i uppspelningen
     -   Klyv layouten i activity/content för CoordinatorLayout
     -   Visa knappen först när sessionen är laddad och kartan klar
@@ -9,3 +9,6 @@
 -   Kunna spela upp från viss frame
 
 -   Kunna välja att spela upp från annan user
+
+-   Lägg till i Session: Device ID
+    -   Secure.getString(getContentResolver(), Secure.ANDROID_ID);
