@@ -98,7 +98,6 @@ class BgrReadingRepository private constructor(
     }
 
     private fun createSessionHeader(context: Context, session: Session) : SessionHeader {
-        val dbRef = firebaseDb.reference
         val user = FirebaseAuth.getInstance().currentUser
         val deviceName = DeviceUtil.getDeviceName()
         val deviceId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID)

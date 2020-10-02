@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.util.valueIterator
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -14,9 +13,13 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.PolylineOptions
-import io.reactivex.Flowable
+import com.google.firebase.FirebaseError
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import io.reactivex.Observable
-import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
@@ -27,6 +30,7 @@ import se.fork.bgrreading.adapters.HorizontalGauge
 import se.fork.bgrreading.data.MovementSnapshot
 import se.fork.bgrreading.data.TimeLapse
 import se.fork.bgrreading.data.remote.Session
+import se.fork.bgrreading.data.remote.SessionHeader
 import se.fork.bgrreading.extensions.delayEach
 import se.fork.bgrreading.managers.TimeLapseBuilder
 import timber.log.Timber
@@ -36,9 +40,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var map: GoogleMap
     private lateinit var currentSession: Session
+    private lateinit var currentSessionHeader: SessionHeader
     private var currentPath = mutableListOf<LatLng>()
     private var currentPolyline: Polyline? = null
     private var compositeDisposable = CompositeDisposable()
+
+    private var isMapReady : Boolean = false
+    private var isSessionReady : Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,10 +63,38 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onStart() {
         super.onStart()
         if (intent.hasExtra("session")) {
-            currentSession = intent.getSerializableExtra("session") as Session
-            Timber.d("onStart: Got Session $currentSession")
+            currentSessionHeader = intent.getSerializableExtra("session") as SessionHeader
+            Timber.d("onStart: Got Session header $currentSessionHeader")
+            fetchSession(currentSessionHeader.id)
         } else {
             Toast.makeText(this, "No session data provided", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun fetchSession(id: String) {
+        val dbRef = FirebaseDatabase.getInstance().reference
+        val uid = FirebaseAuth.getInstance().currentUser?.uid
+        Timber.d("fetchSession $id $uid")
+        uid?.let {
+            val path = dbRef.child("users").child(uid).child("sessions").child(id)
+
+            path.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    Timber.d("onDataChange: dataSnapshot.getValue() ${dataSnapshot.getValue()}")
+                    currentSession = dataSnapshot.getValue(Session::class.java)!!
+                    Timber.d("fetchSession: Got $currentSession")
+                    isSessionReady = true
+                    if (isMapReady) {
+                        zoomToSession()
+                        playSession()
+                    }
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    Timber.e(databaseError.toException(),"onCancelled: ${databaseError.details}")
+                    Toast.makeText(this@MapsActivity, "Error fetching session: " + databaseError.message, Toast.LENGTH_SHORT).show()
+                }
+            })
         }
     }
 
@@ -73,8 +109,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
      */
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
-        zoomToSession()
-        playSession()
+        isMapReady = true
+        if (isSessionReady) {
+            zoomToSession()
+            playSession()
+        }
         // testGauge()
     }
 
@@ -249,8 +288,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 BiFunction<Int, Long, Int?> { item: Int?, interval: Long? -> item!! })
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe {
-                    x: Int? -> x?.let {
+            .subscribe { x: Int? -> x?.let {
                     xAccGauge.setValue(x.toFloat())
                 }
             }
