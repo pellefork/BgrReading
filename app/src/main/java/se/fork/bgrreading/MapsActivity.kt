@@ -9,10 +9,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.LatLngBounds
-import com.google.android.gms.maps.model.Polyline
-import com.google.android.gms.maps.model.PolylineOptions
+import com.google.android.gms.maps.model.*
 import com.google.firebase.FirebaseError
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -197,8 +194,21 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 val polyLineOptions = PolylineOptions()
                     .addAll(currentPath)
                 map.addPolyline(polyLineOptions)
+                renderAccuracyCircle(frame)
             }
             bearing_pos.findViewById<ImageView>(R.id.arrow).rotation = it.bearing
+        }
+    }
+
+    private fun renderAccuracyCircle(frame: MovementSnapshot) {
+        frame.position?.let {
+            val circleOptions = CircleOptions()
+                .strokeWidth(1f)
+                .strokeColor(R.color.colorPrimary)
+                .center(LatLng(it.latitude, it.longitude))
+                .radius(it.horizontalAccuracy.toDouble()) // In meters
+
+            val circle = map.addCircle(circleOptions)
         }
     }
 
