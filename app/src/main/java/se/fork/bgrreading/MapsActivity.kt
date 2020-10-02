@@ -81,12 +81,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             path.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     Timber.d("onDataChange: dataSnapshot.getValue() ${dataSnapshot.getValue()}")
-                    currentSession = dataSnapshot.getValue(Session::class.java)!!
-                    Timber.d("fetchSession: Got $currentSession")
-                    isSessionReady = true
-                    if (isMapReady) {
-                        zoomToSession()
-                        playSession()
+                    val session = dataSnapshot.getValue(Session::class.java)
+                    Timber.d("fetchSession: Got $session")
+                    session?.let {
+                        currentSession = session
+                        isSessionReady = true
+                        if (isMapReady) {
+                            zoomToSession()
+                            playSession()
+                        }
                     }
                 }
 
