@@ -8,5 +8,6 @@
     <color name="colorWhite">#FFFFFF</color>
 
     <color name="bgrTransparent">#00000000</color>
+    <color name="bgrAmber">#BBEFE1B6</color>
 
 </resources>
