@@ -11,7 +11,6 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
-import com.google.firebase.FirebaseError
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -19,7 +18,6 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
@@ -30,9 +28,11 @@ import se.fork.bgrreading.data.MovementSnapshot
 import se.fork.bgrreading.data.TimeLapse
 import se.fork.bgrreading.data.remote.Session
 import se.fork.bgrreading.data.remote.SessionHeader
+import se.fork.bgrreading.extensions.addTo
 import se.fork.bgrreading.extensions.delayEach
 import se.fork.bgrreading.extensions.onClickWithDebounce
 import se.fork.bgrreading.managers.TimeLapseBuilder
+import se.fork.bgrreading.util.ReusableDisposable
 import timber.log.Timber
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
@@ -46,7 +46,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var currentSessionHeader: SessionHeader
     private var currentPath = mutableListOf<LatLng>()
     private var currentPolyline: Polyline? = null
-    private var compositeDisposable = CompositeDisposable()
+    private var reusableDisposable = ReusableDisposable()
 
     private var isMapReady : Boolean = false
     private var isSessionReady : Boolean = false
@@ -177,7 +177,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun pausePlayback() {
-        if(compositeDisposable.isDisposed.not()) compositeDisposable.dispose()
+        reusableDisposable.dispose()
     }
 
     private fun playSession() {
@@ -202,7 +202,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }, {
                 Timber.e(it, "playTimeLapse: Went wrong")
             })
-            .addTo(compositeDisposable)
+            .addTo(reusableDisposable)
     }
 
     private fun renderPosition(frame: MovementSnapshot) {
@@ -339,6 +339,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     xAccGauge.setValue(x.toFloat())
                 }
             }
-            .addTo(compositeDisposable)
+            .addTo(reusableDisposable)
     }
 }
