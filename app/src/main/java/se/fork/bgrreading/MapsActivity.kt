@@ -50,7 +50,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private var isMapReady : Boolean = false
     private var isSessionReady : Boolean = false
 
-    private val timeFormat = SimpleDateFormat("mm-ss_SSS")
+    private val timeFormat = SimpleDateFormat("mm:ss.SS")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -227,7 +227,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun renderFrame(frame: MovementSnapshot) {
-        renderTime(Date(frame.frameStart))
+        renderTime(Date(frame.frameStart - currentSessionHeader.startDate.time))
         renderPosition(frame)
         renderAcceleration(frame)
         renderRotation(frame)
@@ -238,7 +238,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun renderSpeed(speed: Float) {
-        speed_text.text = DecimalFormat("##.#").format(speed)
+        speed_text.text = getString(R.string.format_speed).format(DecimalFormat("##.#").format(speed))
     }
 
     // -------------------------------------- Sensor reading data rendering ---------------------------------------------
