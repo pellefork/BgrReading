@@ -47,6 +47,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private var currentPath = mutableListOf<LatLng>()
     private var currentPolyline: Polyline? = null
     private var reusableDisposable = ReusableDisposable()
+    private var currentFrame: Int = 0
 
     private var isMapReady : Boolean = false
     private var isSessionReady : Boolean = false
@@ -105,6 +106,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     Timber.d("fetchSession: Got $session")
                     session?.let {
                         currentSession = session
+                        currentFrame = 0
                         isSessionReady = true
                         if (isMapReady) {
                             zoomToSession()
@@ -191,7 +193,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun playTimeLapse(timeLapse: TimeLapse) {
         val frameLapse = 1000 / timeLapse.frameRate
-        Observable.fromArray(timeLapse.movements)
+        Observable.fromArray(timeLapse.movements.subList(currentFrame, timeLapse.movements.lastIndex))
             .flatMapIterable { it }
             .delayEach(frameLapse.toLong(), TimeUnit.MILLISECONDS)
             .subscribeOn(Schedulers.io())
@@ -199,6 +201,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             .subscribe({
                 Timber.d("playTimeLapse: Rendering $it")
                 renderFrame(it)
+                currentFrame++
             }, {
                 Timber.e(it, "playTimeLapse: Went wrong")
             })
