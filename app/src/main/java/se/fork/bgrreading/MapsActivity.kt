@@ -31,6 +31,7 @@ import se.fork.bgrreading.data.TimeLapse
 import se.fork.bgrreading.data.remote.Session
 import se.fork.bgrreading.data.remote.SessionHeader
 import se.fork.bgrreading.extensions.delayEach
+import se.fork.bgrreading.extensions.onClickWithDebounce
 import se.fork.bgrreading.managers.TimeLapseBuilder
 import timber.log.Timber
 import java.text.DecimalFormat
@@ -49,6 +50,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private var isMapReady : Boolean = false
     private var isSessionReady : Boolean = false
+    private var isPlaying : Boolean = false
 
     private val timeFormat = SimpleDateFormat("mm:ss.SS")
 
@@ -59,6 +61,18 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         setSupportActionBar(findViewById(R.id.toolbar))
 
         setupGauges()
+        fab.onClickWithDebounce {
+            if (isPlaying) {
+                isPlaying = false
+                setFabStatus(fab.visibility, R.drawable.play)
+                pausePlayback()
+            } else {
+                isPlaying = true
+                setFabStatus(fab.visibility, R.drawable.pause)
+                playSession()
+            }
+        }
+
 
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
@@ -160,13 +174,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun setFabStatus(visibility: Int, icon: Int) {
         fab.visibility = visibility
         fab.setImageResource(icon)
-        fab.setOnClickListener {
-            playSession()   // TODO Just "play" for now, no pause of resume yet
-        }
     }
 
     private fun pausePlayback() {
-
+        if(compositeDisposable.isDisposed.not()) compositeDisposable.dispose()
     }
 
     private fun playSession() {

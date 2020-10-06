@@ -47,7 +47,7 @@ class SessionViewHolder(val customView: View, var sessionHeader: SessionHeader? 
             customView.rotations_text?.text = header.nRotations.toString()
             customView.user_name_text.text = header.userName
             customView.device_name_text.text = header.deviceName
-            customView.duration_text.text = SimpleDateFormat("HH:mm", Locale.getDefault()).format(duration)
+            customView.duration_text.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(duration)
             customView.setOnClickListener {
                 customView.context.launchActivity<MapsActivity> {
                     putExtra("session", header)
