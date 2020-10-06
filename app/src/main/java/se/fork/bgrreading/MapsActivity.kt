@@ -92,6 +92,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         setFabStatus(View.GONE, R.drawable.play)
     }
 
+    override fun onPause() {
+        pausePlayback()
+        super.onPause()
+    }
+
     private fun fetchSession(id: String) {
         val dbRef = FirebaseDatabase.getInstance().reference
         val uid = FirebaseAuth.getInstance().currentUser?.uid
@@ -202,6 +207,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 Timber.d("playTimeLapse: Rendering $it")
                 renderFrame(it)
                 currentFrame++
+                Timber.d("playTimeLapse rendered $currentFrame of ${timeLapse.movements.lastIndex}")
+                if (currentFrame.equals(timeLapse.movements.lastIndex)) {
+                    isPlaying = false
+                    currentFrame = 0
+                    setFabStatus(View.VISIBLE, R.drawable.play)
+                }
             }, {
                 Timber.e(it, "playTimeLapse: Went wrong")
             })
