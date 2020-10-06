@@ -43,7 +43,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/center"
         android:layout_marginTop="8dp"
-        android:background="@color/colorPrimaryDark"/>
+        android:background="@color/colorPrimaryDarkSemiTransparent"/>
 
     <View
         android:id="@+id/right_gauge"
@@ -52,6 +52,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toEndOf="@+id/center"
         android:layout_marginTop="8dp"
-        android:background="@color/colorPrimaryDark"/>
+        android:background="@color/colorPrimaryDarkSemiTransparent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

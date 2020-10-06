@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:map="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    tools:context=".MapsActivity">
+
+    <fragment
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <TextView
+        android:id="@+id/time_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        map:layout_constraintTop_toTopOf="parent"
+        map:layout_constraintStart_toStartOf="parent"
+        map:layout_constraintEnd_toStartOf="@+id/speed_text"
+        android:layout_marginTop="@dimen/normal_margin"
+        android:layout_marginStart="@dimen/normal_margin"
+        android:textSize="20sp"
+        tools:text="01:42.00"/>
+
+    <TextView
+        android:id="@+id/speed_text"
+        android:layout_width="0dp"
+        map:layout_constraintTop_toTopOf="parent"
+        android:layout_height="wrap_content"
+        map:layout_constraintStart_toEndOf="@+id/time_text"
+        map:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="@dimen/normal_margin"
+        android:layout_marginEnd="@dimen/normal_margin"
+        android:textSize="20sp"
+        android:gravity="end"
+        tools:text="17.2 km/h"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        map:layout_constraintTop_toBottomOf="@+id/time_text"
+        android:background="@color/bgrTransparent"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/normal_margin"
+            android:text="Accelerations:"/>
+
+        <include android:id="@+id/acc_x" layout="@layout/layout_horiz_gauge"/>
+        <include android:id="@+id/acc_y" layout="@layout/layout_horiz_gauge"/>
+        <include android:id="@+id/acc_z" layout="@layout/layout_horiz_gauge"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/normal_margin"
+            android:text="Rotations:"/>
+
+        <include android:id="@+id/rot_x" layout="@layout/layout_horiz_gauge"/>
+        <include android:id="@+id/rot_y" layout="@layout/layout_horiz_gauge"/>
+        <include android:id="@+id/rot_z" layout="@layout/layout_horiz_gauge"/>
+        <include android:id="@+id/rot" layout="@layout/layout_horiz_gauge"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/normal_margin"
+            android:text="Bearing (pos)"/>
+
+        <include
+            android:id="@+id/bearing_pos"
+            layout="@layout/layout_bearing_dial"
+            android:layout_height="36dp"
+            android:layout_width="36dp"
+            android:layout_margin="@dimen/normal_margin"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/normal_margin"
+            android:text="Bearing (rot)"/>
+
+        <include
+            android:id="@+id/bearing_rot"
+            layout="@layout/layout_bearing_dial"
+            android:layout_height="36dp"
+            android:layout_width="36dp"
+            android:layout_margin="@dimen/normal_margin"/>
+
+
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+

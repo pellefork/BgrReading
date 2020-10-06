@@ -2,6 +2,7 @@ package se.fork.bgrreading
 
 import android.location.Location
 import android.os.Bundle
+import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -23,6 +24,7 @@ import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_maps.*
+import kotlinx.android.synthetic.main.content_maps.*
 import se.fork.bgrreading.adapters.HorizontalGauge
 import se.fork.bgrreading.data.MovementSnapshot
 import se.fork.bgrreading.data.TimeLapse
@@ -31,6 +33,9 @@ import se.fork.bgrreading.data.remote.SessionHeader
 import se.fork.bgrreading.extensions.delayEach
 import se.fork.bgrreading.managers.TimeLapseBuilder
 import timber.log.Timber
+import java.text.DecimalFormat
+import java.text.SimpleDateFormat
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -44,6 +49,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private var isMapReady : Boolean = false
     private var isSessionReady : Boolean = false
+
+    private val timeFormat = SimpleDateFormat("mm-ss_SSS")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,6 +73,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         } else {
             Toast.makeText(this, "No session data provided", Toast.LENGTH_SHORT).show()
         }
+        setFabStatus(View.GONE, R.drawable.play)
     }
 
     private fun fetchSession(id: String) {
@@ -85,7 +93,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                         isSessionReady = true
                         if (isMapReady) {
                             zoomToSession()
-                            playSession()
+                            setFabStatus(View.VISIBLE, R.drawable.play)
                         }
                     }
                 }
@@ -107,14 +115,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
+
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
         isMapReady = true
         if (isSessionReady) {
             zoomToSession()
-            playSession()
+            setFabStatus(View.VISIBLE, R.drawable.play)
         }
-        // testGauge()
     }
 
     private fun zoomToSession() {
@@ -148,12 +156,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         return result.get(0)
     }
 
-    private fun drawFullSessionPolyLine() {
-        val polyLineOptions = PolylineOptions()
-            .addAll(currentSession.locations.map {
-                LatLng(it.latitude, it.longitude)
-            })
-        map.addPolyline(polyLineOptions)
+    private fun setFabStatus(visibility: Int, icon: Int) {
+        fab.visibility = visibility
+        fab.setImageResource(icon)
+        fab.setOnClickListener {
+            playSession()   // TODO Just "play" for now, no pause of resume yet
+        }
+    }
+
+    private fun pausePlayback() {
+
     }
 
     private fun playSession() {
@@ -197,6 +209,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 renderAccuracyCircle(frame)
             }
             bearing_pos.findViewById<ImageView>(R.id.arrow).rotation = it.bearing
+            renderSpeed(position.speed * 3.6f)
         }
     }
 
@@ -213,9 +226,18 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun renderFrame(frame: MovementSnapshot) {
+        renderTime(Date(frame.frameStart))
         renderPosition(frame)
         renderAcceleration(frame)
         renderRotation(frame)
+    }
+
+    private fun renderTime(time : Date) {
+        time_text.text = timeFormat.format(time)
+    }
+
+    private fun renderSpeed(speed: Float) {
+        speed_text.text = DecimalFormat("##.#").format(speed)
     }
 
     // -------------------------------------- Sensor reading data rendering ---------------------------------------------
